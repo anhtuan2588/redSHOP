@@ -54,22 +54,22 @@ redSHOP.AjaxOrderPaymentStatusCheck = function(){
 		dataType: 'HTML',
 		data: {id: redSHOP.RSConfig._('orderId')},
 	})
-	.done(function(res) {
+		.done(function(res) {
 
-		// Update status to matched DOM. Make sure you add this ID in order receipt template.
-		jQuery('#order_payment_status').html(res);
+			// Update status to matched DOM. Make sure you add this ID in order receipt template.
+			jQuery('#order_payment_status').html(res);
 
-		// Make sure script is executed at least one time.
-		if (redSHOP.AjaxOrderPaymentStatusExecuted)
-		{
-			setTimeout('redSHOP.AjaxOrderPaymentStatusCheck()', 10000);
-		}
+			// Make sure script is executed at least one time.
+			if (redSHOP.AjaxOrderPaymentStatusExecuted)
+			{
+				setTimeout('redSHOP.AjaxOrderPaymentStatusCheck()', 10000);
+			}
 
-		redSHOP.AjaxOrderPaymentStatusExecuted = true;
-	})
-	.fail(function() {
-		console.log("error");
-	});
+			redSHOP.AjaxOrderPaymentStatusExecuted = true;
+		})
+		.fail(function() {
+			console.log("error");
+		});
 };
 
 redSHOP.prepareStateList = function(countryListEle, stateListEle){
@@ -88,40 +88,40 @@ redSHOP.prepareStateList = function(countryListEle, stateListEle){
 		dataType: 'json',
 		data: postData
 	})
-	.done(function(data) {
+		.done(function(data) {
 
-		// Remove all the options
-		stateListEle.empty();
+			// Remove all the options
+			stateListEle.empty();
 
-		// Now let's hide state list by default
-		jQuery('#div_state_txt').hide();
-		stateListEle.parent().hide();
-		stateListEle.hide();
+			// Now let's hide state list by default
+			jQuery('#div_state_txt').hide();
+			stateListEle.parent().hide();
+			stateListEle.hide();
 
-		// And show it when it has actua options
-		if (data.length)
-		{
-			jQuery('#div_state_txt').show();
-			stateListEle.parent().show();
-
-			// No needs to show original select if select2 is there.
-			if (!jQuery('#s2id_' + stateListEle.attr('id')).length)
+			// And show it when it has actua options
+			if (data.length)
 			{
-				stateListEle.show();
+				jQuery('#div_state_txt').show();
+				stateListEle.parent().show();
+
+				// No needs to show original select if select2 is there.
+				if (!jQuery('#s2id_' + stateListEle.attr('id')).length)
+				{
+					stateListEle.show();
+				}
 			}
-		}
 
-		// Generate options for select lists
-		jQuery.each(data, function(key,state) {
-			stateListEle.append(jQuery("<option></option>")
-						.attr("value", state.value).text(state.text));
+			// Generate options for select lists
+			jQuery.each(data, function(key,state) {
+				stateListEle.append(jQuery("<option></option>")
+					.attr("value", state.value).text(state.text));
+			});
+
+			stateListEle.trigger('change.select2')
+		})
+		.fail(function() {
+			console.log("Error getting state list.");
 		});
-
-		stateListEle.trigger('change.select2')
-	})
-	.fail(function() {
-		console.log("Error getting state list.");
-	});
 };
 
 // Write script here to execute on page load - dom ready.
@@ -147,86 +147,129 @@ jQuery(document).ready(function($) {
 		redSHOP.prepareStateList(jQuery(this), jQuery('#' + jQuery(this).attr('stateid')));
 	});
 
-    $('body')
-        .on('change', 'form[name^="update_cart"]', function() {
-            updateCartAjax($, $(this));
-        })
-        .on('keyup keypress keydown', 'form[name^="update_cart"]', function(e) {
-            if (event.which == 13)
-            {
-                updateCartAjax($, $(this));
-                e.preventDefault();
-            }
-        })
-        .on('click', '#plus, #minus', function() {
-            var form = $($(this).closest('form[name^="update_cart"]'));
-            updateCartAjax($, form);
-        })
+	$('body')
+		.on('change', 'form[name^="update_cart"]', function() {
+			updateCartAjax($, $(this));
+		})
+		.on('keyup keypress keydown', 'form[name^="update_cart"]', function(e) {
+			if (event.which == 13)
+			{
+				updateCartAjax($, $(this));
+				e.preventDefault();
+			}
+		})
+		.on('click', '#plus, #minus', function() {
+			var form = $($(this).closest('form[name^="update_cart"]'));
+			updateCartAjax($, form);
+		})
 });
 
 function updateCartAjax($, form)
 {
-    var quantity   = form.children('[name=quantity]').val();
-    var productId  = form.children('[name=productId]').val();
-    var cart_index = form.children('[name=cart_index]').val();
-    var Itemid     = form.children('[name=Itemid]').val();
-    var token      = redSHOP.RSConfig._('AJAX_TOKEN');
+	var quantity   = form.children('[name=quantity]').val();
+	var productId  = form.children('[name=productId]').val();
+	var cart_index = form.children('[name=cart_index]').val();
+	var Itemid     = form.children('[name=Itemid]').val();
+	var token      = redSHOP.RSConfig._('AJAX_TOKEN');
 
-    var url = redSHOP.RSConfig._('SITE_URL') + 'index.php?option=com_redshop&view=cart&task=update&' + token + '=1';
-    $.ajax({
-        type: 'POST',
-        url: url,
-        data: {
-            'quantity'  : quantity,
-            'productId' : productId,
-            'cart_index': cart_index,
-            'Itemid'    : Itemid
-        },
-        beforeSend: function() {
-            var style = 'background: rgba(0,0,0,0.5); position: fixed; width: 100%; height: 100%; z-index: 999; display: flex; align-items: center; justify-content: center; left: 0; top: 0;';
-            $('<div id="cart-ajax-loader" style="'+ style +'"><img src="/media/com_redshop/images/reloading.gif" alt="" border="0"></div>').appendTo('body');
-            $('body').css({'overflow' : 'hidden'});
-        },
-        success: function(data) {
-            $('#redshopcomponent').html($(data).find('#redshopcomponent').html());
-            redSHOP.triggerCustomEvents('onAfterUpdateCartAjax', {
-                data: data
-            })
-        },
-        complete: function(){
-            //afer ajax call is completed
-            $('#cart-ajax-loader').remove();
-            $('body').css({'overflow' : ''});
-        }
-    });
+	var url = redSHOP.RSConfig._('SITE_URL') + 'index.php?option=com_redshop&view=cart&task=update&' + token + '=1';
+	$.ajax({
+		type: 'POST',
+		url: url,
+		data: {
+			'quantity'  : quantity,
+			'productId' : productId,
+			'cart_index': cart_index,
+			'Itemid'    : Itemid
+		},
+		beforeSend: function() {
+			var style = 'background: rgba(0,0,0,0.5); position: fixed; width: 100%; height: 100%; z-index: 999; display: flex; align-items: center; justify-content: center; left: 0; top: 0;';
+			$('<div id="cart-ajax-loader" style="'+ style +'"><img src="/media/com_redshop/images/reloading.gif" alt="" border="0"></div>').appendTo('body');
+			$('body').css({'overflow' : 'hidden'});
+		},
+		success: function(data) {
+			$('#redshopcomponent').html($(data).find('#redshopcomponent').html());
+			redSHOP.triggerCustomEvents('onAfterUpdateCartAjax', {
+				data: data
+			})
+		},
+		complete: function(){
+			//afer ajax call is completed
+			$('#cart-ajax-loader').remove();
+			$('body').css({'overflow' : ''});
+		}
+	});
 }
 
 function getCatalogValidation() {
-    var frm = document.frmcatalog;
-    var email = frm.email_address.value;
-    var patt1 = new RegExp("([a-z0-9_]+)@([a-z0-9_-]+)[.][a-z]");
+	var frm = document.frmcatalog;
+	var email = frm.email_address.value;
+	var patt1 = new RegExp("([a-z0-9_]+)@([a-z0-9_-]+)[.][a-z]");
 
-    if (frm.catalog_id.value == '0') {
-        alert(Joomla.JText._('COM_REDSHOP_SELECT_CATALOG'));
-        frm.catalog_id.focus();
-        return false;
-    }
+	if (frm.catalog_id.value == '0') {
+		alert(Joomla.JText._('COM_REDSHOP_SELECT_CATALOG'));
+		frm.catalog_id.focus();
+		return false;
+	}
 
-    if (frm.name_2.value == '') {
-        alert(Joomla.JText._('COM_REDSHOP_ENTER_NAME'));
-        frm.name_2.focus();
-        return false;
-    }
+	if (frm.name_2.value == '') {
+		alert(Joomla.JText._('COM_REDSHOP_ENTER_NAME'));
+		frm.name_2.focus();
+		return false;
+	}
 
-    if (email == '') {
-        alert(Joomla.JText._('COM_REDSHOP_ENTER_AN_EMAIL_ADDRESS'));
-        frm.email_address.focus();
-        return false;
-    }
-    else if (patt1.test(email) == false) {
-        alert(Joomla.JText._('COM_REDSHOP_EMAIL_ADDRESS_NOT_VALID'));
-        frm.email_address.focus();
-        return false;
-    }
-    return true;
+	if (email == '') {
+		alert(Joomla.JText._('COM_REDSHOP_ENTER_AN_EMAIL_ADDRESS'));
+		frm.email_address.focus();
+		return false;
+	}
+	else if (patt1.test(email) == false) {
+		alert(Joomla.JText._('COM_REDSHOP_EMAIL_ADDRESS_NOT_VALID'));
+		frm.email_address.focus();
+		return false;
+	}
+	return true;
 }
+
+//Jquery to keep values at promotion edit page
+//jQuery(document).ready(function($) {
+//$('.btn-success').click(function(event) {
+/*(var script = $('.btn-success').attr("onclick");
+if (script == "Joomla.submitbutton('promotion.apply');") {
+    alert("xzcv");
+    event.preventDefault();
+}*/
+//event.preventDefault();
+//return false;
+//});
+//$('.select2-choices').on('change', function() {
+//alert( 'zxc' );
+//});
+//});
+
+function keepValue(e) {
+	//lay gia tri
+	if (e == 'manufacturer') {
+		htmlManufacturer = $('#s2id_manufacturer').html();
+		Cookies.set('htmlManufacturerCookie', htmlManufacturer);
+		cookie = Cookies.get('htmlManufacturerCookie');
+	}
+	/*if (e == 'manufacturer') {
+		htmlManufacturer = $('#s2id_manufacturer').html();
+		//luu lai vao session/cookie
+		Cookies.set('htmlManufacturerCookie', htmlManufacturer);
+		cookie = Cookies.get('htmlManufacturerCookie');
+		//alert(cookie);
+		//kiem tra co rong hay khong
+		//gan gia tri da luu ban dau
+		$('#s2id_manufacturer').html(htmlManufacturer);
+	}*/
+}
+
+jQuery(window).load(function () {
+	htmlManufacturerCookie = Cookies.get('htmlManufacturerCookie');
+	if (htmlManufacturerCookie != 'undefined' || htmlManufacturerCookie != '') {
+		//alert(htmlManufacturerCookie);
+		//$('#s2id_manufacturer').html(htmlManufacturerCookie);
+	}
+});
