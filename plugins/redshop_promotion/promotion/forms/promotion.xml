@@ -34,6 +34,7 @@
                 description="COM_REDSHOP_PROMOTION_CONDITION_PRODUCT_CATEGORY"
                 class="form-control"
                 multiple="true"
+                onchange="keepValue('category');"
         />
         <field
                 name="product"
@@ -42,6 +43,7 @@
                 description="COM_REDSHOP_PROMOTION_CONDITION_PRODUCT"
                 class="form-control"
                 multiple="true"
+                onchange="keepValue('product');"
         />
         <field
                 id="condition_amount"
@@ -52,6 +54,7 @@
                 class="validate-numeric"
                 default=""
                 required="false"
+                onchange="keepValue('condition_amount');"
         />
     </fieldset>
     <fieldset name="conditions_volume_order">
@@ -76,6 +79,7 @@
                 label="COM_REDSHOP_PROMOTION_CONDITION_FROM_DATE"
                 description="COM_REDSHOP_PROMOTION_CONDITION_FROM_DATE"
                 required="false"
+                onchange="keepValue('from_date');"
         />
         <field
                 id="to_date"
@@ -84,6 +88,7 @@
                 label="COM_REDSHOP_PROMOTION_CONDITION_TO_DATE"
                 description="COM_REDSHOP_PROMOTION_CONDITION_TO_DATE"
                 required="false"
+                onchange="keepValue('to_date');"
         />
     </fieldset>
     <fieldset name="awards">
