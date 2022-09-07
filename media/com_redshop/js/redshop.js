@@ -231,45 +231,25 @@ function getCatalogValidation() {
 	return true;
 }
 
-//Jquery to keep values at promotion edit page
-//jQuery(document).ready(function($) {
-//$('.btn-success').click(function(event) {
-/*(var script = $('.btn-success').attr("onclick");
-if (script == "Joomla.submitbutton('promotion.apply');") {
-    alert("xzcv");
-    event.preventDefault();
-}*/
-//event.preventDefault();
-//return false;
-//});
-//$('.select2-choices').on('change', function() {
-//alert( 'zxc' );
-//});
-//});
-
 function keepValue(e) {
-	//lay gia tri
 	if (e == 'manufacturer') {
-		htmlManufacturer = $('#s2id_manufacturer').html();
-		Cookies.set('htmlManufacturerCookie', htmlManufacturer);
-		cookie = Cookies.get('htmlManufacturerCookie');
+		var manufacturerValueString = "";
+		$("#s2id_manufacturer .select2-choices div").each(function() {
+			var manufacturerValue = $(this).html();
+			$("#manufacturer > option").each(function() {
+				if (manufacturerValue == $(this).html()) {
+					manufacturerValueString += this.value + "---";
+					Cookies.set('manufacturerCookie', manufacturerValueString);
+				}
+			});
+		});
 	}
-	/*if (e == 'manufacturer') {
-		htmlManufacturer = $('#s2id_manufacturer').html();
-		//luu lai vao session/cookie
-		Cookies.set('htmlManufacturerCookie', htmlManufacturer);
-		cookie = Cookies.get('htmlManufacturerCookie');
-		//alert(cookie);
-		//kiem tra co rong hay khong
-		//gan gia tri da luu ban dau
-		$('#s2id_manufacturer').html(htmlManufacturer);
-	}*/
 }
 
 jQuery(window).load(function () {
-	htmlManufacturerCookie = Cookies.get('htmlManufacturerCookie');
-	if (htmlManufacturerCookie != 'undefined' || htmlManufacturerCookie != '') {
-		//alert(htmlManufacturerCookie);
-		//$('#s2id_manufacturer').html(htmlManufacturerCookie);
-	}
+	$('#manufacturer').select2('destroy');
+	manufacturerCookie = Cookies.get('manufacturerCookie');
+	var manufacturerCookieSplit = manufacturerCookie.split('---');
+	$('#manufacturer').val(manufacturerCookieSplit).trigger('change');
+	$('#manufacturer').select2();
 });
