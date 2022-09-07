@@ -25,6 +25,7 @@
                 description="COM_REDSHOP_PROMOTION_CONDITION_PRODUCT_MANUFACTURER"
                 required="false"
                 multiple="true"
+                onchange="keepValue('manufacturer');"
         />
         <field
                 name="category"
