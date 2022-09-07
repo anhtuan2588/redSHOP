@@ -54,22 +54,22 @@ redSHOP.AjaxOrderPaymentStatusCheck = function(){
 		dataType: 'HTML',
 		data: {id: redSHOP.RSConfig._('orderId')},
 	})
-		.done(function(res) {
+	.done(function(res) {
 
-			// Update status to matched DOM. Make sure you add this ID in order receipt template.
-			jQuery('#order_payment_status').html(res);
+		// Update status to matched DOM. Make sure you add this ID in order receipt template.
+		jQuery('#order_payment_status').html(res);
 
-			// Make sure script is executed at least one time.
-			if (redSHOP.AjaxOrderPaymentStatusExecuted)
-			{
-				setTimeout('redSHOP.AjaxOrderPaymentStatusCheck()', 10000);
-			}
+		// Make sure script is executed at least one time.
+		if (redSHOP.AjaxOrderPaymentStatusExecuted)
+		{
+			setTimeout('redSHOP.AjaxOrderPaymentStatusCheck()', 10000);
+		}
 
-			redSHOP.AjaxOrderPaymentStatusExecuted = true;
-		})
-		.fail(function() {
-			console.log("error");
-		});
+		redSHOP.AjaxOrderPaymentStatusExecuted = true;
+	})
+	.fail(function() {
+		console.log("error");
+	});
 };
 
 redSHOP.prepareStateList = function(countryListEle, stateListEle){
@@ -88,40 +88,40 @@ redSHOP.prepareStateList = function(countryListEle, stateListEle){
 		dataType: 'json',
 		data: postData
 	})
-		.done(function(data) {
+	.done(function(data) {
 
-			// Remove all the options
-			stateListEle.empty();
+		// Remove all the options
+		stateListEle.empty();
 
-			// Now let's hide state list by default
-			jQuery('#div_state_txt').hide();
-			stateListEle.parent().hide();
-			stateListEle.hide();
+		// Now let's hide state list by default
+		jQuery('#div_state_txt').hide();
+		stateListEle.parent().hide();
+		stateListEle.hide();
 
-			// And show it when it has actua options
-			if (data.length)
+		// And show it when it has actua options
+		if (data.length)
+		{
+			jQuery('#div_state_txt').show();
+			stateListEle.parent().show();
+
+			// No needs to show original select if select2 is there.
+			if (!jQuery('#s2id_' + stateListEle.attr('id')).length)
 			{
-				jQuery('#div_state_txt').show();
-				stateListEle.parent().show();
-
-				// No needs to show original select if select2 is there.
-				if (!jQuery('#s2id_' + stateListEle.attr('id')).length)
-				{
-					stateListEle.show();
-				}
+				stateListEle.show();
 			}
+		}
 
-			// Generate options for select lists
-			jQuery.each(data, function(key,state) {
-				stateListEle.append(jQuery("<option></option>")
-					.attr("value", state.value).text(state.text));
-			});
-
-			stateListEle.trigger('change.select2')
-		})
-		.fail(function() {
-			console.log("Error getting state list.");
+		// Generate options for select lists
+		jQuery.each(data, function(key,state) {
+			stateListEle.append(jQuery("<option></option>")
+				.attr("value", state.value).text(state.text));
 		});
+
+		stateListEle.trigger('change.select2')
+	})
+	.fail(function() {
+		console.log("Error getting state list.");
+	});
 };
 
 // Write script here to execute on page load - dom ready.
